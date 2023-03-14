@@ -2,6 +2,9 @@
 
 namespace App;
 
+use App\Request\Request;
+
+
 use Sruuua\DependencyInjection\Container;
 use Sruuua\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Dotenv\Dotenv;
@@ -27,11 +30,14 @@ class Kernel
         $this->container = (new ContainerBuilder($this))->getContainer();
     }
 
-    public function handle()
+    /**
+    * Handle the request
+    *
+    * @param Request $request request to handle
+    */
+    public function handle(Request $request): void
     {
-        $request = $_SERVER['REQUEST_URI'];
-        $page = $this->container->get('router')->getRouter()->getRoute($request);
-
+        $page = $this->container->get('router')->getRouter()->getRoute($request->getRequestedPage());
         $func = $page->getFunction()->getName();
         $page->getController()->$func();
     }
@@ -39,7 +45,7 @@ class Kernel
     /**
      * Return the env values
      * 
-     * @return mixed[]
+     * @return array
      */
     public function getEnv(): array
     {
